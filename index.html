@@ -108,7 +108,7 @@
         width: 350px; /* Ajuste para pantallas más pequeñas */
       }
     }
-  </style>
+  </style> 
   <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
 </head>
 <body>
@@ -151,11 +151,23 @@
 
       createHearts(10);
 
-      var text = new createjs.Text("Cada Día Me Enamoro Más De Ti Hari❤️", "bold 24px Arial", "#312");
-      text.textAlign = "center";
-      text.x = w / 2;
-      text.y = h / 2 - text.getMeasuredLineHeight();
-      stage.addChild(text);
+      // Obtener el tamaño de la ventana
+var w = window.innerWidth;
+var h = window.innerHeight;
+
+// Crear el texto
+var text = new createjs.Text("Cada Día Me Enamoro Más De Ti Hari❤️", "bold 24px Arial", "#312");
+
+// Centrar el texto
+text.textAlign = "center";
+text.x = w / 2;
+text.y = h / 2 - text.getMeasuredLineHeight();
+
+// Agregar el texto al escenario
+stage.addChild(text);
+
+// Actualizar el escenario
+stage.update()
 
       for (var i = 0; i < 100; i++) {
         var captureContainer = new createjs.Container();
