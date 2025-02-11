@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <title>Carta para María</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primario: #fff;
+            --fondo: #312;
+            --fondo-sobre: #ffe3ed;
+            --solapa-sobre: #ffccd5;
+            --cuerpo-sobre: #ffc1d1;
+            --sombra: rgba(0, 0, 0, 0.2);
+            --texto: #003049;
+            --corazon: #ff477e;
+        }
+
+        body {
+            background: var(--fondo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            font-family: "Dancing Script", cursive;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-bottom: 30px;
+            color: #a00034;
+        }
+
+        .contenedor {
+            width: 350px;
+            position: relative;
+        }
+
+        .envoltura-sobre {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            box-shadow: 0 0 20px var(--sombra);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: filter 0.3s ease-in-out;
+        }
+
+        .sobre {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Solapa superior */
+        .sobre::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 4;
+            border-top: 150px solid var(--solapa-sobre);
+            border-right: 175px solid transparent;
+            border-left: 175px solid transparent;
+            transform-origin: top;
+            transition: transform 0.5s ease-in-out;
+            border-radius: 10px;
+        }
+
+        /* Solapa inferior */
+        .sobre::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background-color: var(--cuerpo-sobre);
+            z-index: 5;
+            border-radius: 0 0 15px 15px;
+        }
+
+        /* Solapas laterales */
+        .lado-izquierdo, .lado-derecho {
+            position: absolute;
+            bottom: 0;
+            width: 50%;
+            height: 100%;
+            background-color: var(--cuerpo-sobre);
+            z-index: 4;
+        }
+
+        .lado-izquierdo {
+            left: 0;
+            clip-path: polygon(0 100%, 50% 50%, 0 0);
+        }
+
+        .lado-derecho {
+            right: 0;
+            clip-path: polygon(100% 100%, 50% 50%, 100% 0);
+        }
+
+        .corazon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background-color: var(--corazon);
+            transform: translate(-50%, -50%) rotate(45deg);
+            z-index: 999;
+            cursor: pointer;
+        }
+
+        .corazon::before,
+        .corazon::after {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: var(--corazon);
+            border-radius: 100%;
+        }
+
+        .corazon:before {
+            top: -15px;
+        }
+
+        .corazon:after {
+            right: 15px;
+        }
+
+        .carta {
+            position: absolute;
+            bottom: -100%;
+            left: 50%;
+            width: 90%;
+            height: 90%;
+            background-color: var(--primario);
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            transform: translateX(-50%);
+            transition: bottom 0.5s ease-in-out;
+            overflow-y: auto;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .contenido {
+            color: var(--texto);
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .abierto .sobre::before {
+            transform: rotateX(180deg) scaleY(0.5);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 0;
+        }
+
+        .abierto .carta {
+            bottom: 10%;
+        }
+
+        /* Fondo oscuro cuando se abre la ventana */
+        .fondo-oscuro {
+            filter: brightness(0.5);
+        }
+
+        /* Estilo de la ventana emergente */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 400px;
+            background: var(--primario);
+            padding: 20px;
+            box-shadow: 0 5px 15px var(--sombra);
+            text-align: center;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .modal p {
+            font-size: 18px;
+            color: var(--texto);
+        }
+
+        .cerrar {
+            margin-top: 15px;
+            padding: 5px 10px;
+            background: var(--corazon);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Para María 🌹</h1>
+    <div class="contenedor">
+        <div class="envoltura-sobre" id="envoltura">
+            <div class="sobre">
+                <div class="lado-izquierdo"></div>
+                <div class="lado-derecho"></div>
+                <div class="carta" onclick="mostrarCarta()">
+                    <div class="contenido">
+                        <strong>Querida María</strong>
+                        <p>Haz clic para abrir la carta</p>
+                    </div>
+                </div>
+            </div>
+            <div class="corazon"></div>
+        </div>
+    </div>
+
+    <!-- Ventana emergente -->
+    <div class="modal" id="modal">
+        <p><strong>Querida María</strong></p>
+        <p>Hoy quiero recordarte lo especial que eres. Desde el momento en que te conocí, supe que mi vida cambiaría para siempre. 🌟</p>
+        <p>Eres mi alegría, mi inspiración y mi razón para sonreír cada día. Como una melodía hermosa que nunca deja de sonar en mi corazón. 💖</p>
+        <p>Gracias por ser tú, por iluminar mi mundo y llenar mi vida de amor y felicidad.</p>
+        <p>Con todo mi amor, <br> Tu eterno admirador. 💕</p>
+        <button class="cerrar" onclick="cerrarCarta()">Cerrar</button>
+    </div>
+
+    <script>
+        document.querySelector(".corazon").addEventListener("click", () => {
+            document.querySelector(".envoltura-sobre").classList.toggle("abierto");
+        });
+
+        function mostrarCarta() {
+            document.getElementById("modal").style.display = "block";
+            document.getElementById("envoltura").classList.add("fondo-oscuro");
+        }
+
+        function cerrarCarta() {
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("envoltura").classList.remove("fondo-oscuro");
+        }
+
+        var canvas;
+var stage;
+var container;
+var maxHearts = 100;
+var currentHearts = 0;
+
+function init() {
+  canvas = document.getElementById("testCanvas");
+  stage = new createjs.Stage(canvas);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  container = new createjs.Container();
+  stage.addChild(container);
+
+  createHearts(10);
+
+  createjs.Ticker.timingMode = createjs.Ticker.RAF;
+  createjs.Ticker.on("tick", tick);
+}
+
+function createHearts(count) {
+  for (var i = 0; i < count; i++) {
+    var heart = new createjs.Shape();
+    heart.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 30 - 45, 100, 50 + Math.random() * 30));
+    heart.graphics.moveTo(0, -12).curveTo(1, -20, 8, -20).curveTo(16, -20, 16, -10).curveTo(16, 0, 0, 12);
+    heart.graphics.curveTo(-16, 0, -16, -10).curveTo(-16, -20, -8, -20).curveTo(-1, -20, 0, -12);
+
+    heart.y = Math.random() * canvas.height + canvas.height;
+    heart._x = Math.random() * canvas.width;
+    heart.velY = Math.random() * 2 + 1;
+    heart.perX = (1 + Math.random() * 2) * canvas.height;
+    heart.offX = Math.random() * canvas.height;
+    heart.ampX = heart.perX * 0.1 * (0.15 + Math.random());
+    heart.scale = Math.random() * 2 + 1;
+    heart._rotation = Math.random() * 40 - 20;
+    heart.alpha = Math.random() * 0.75 + 0.05;
+    heart.compositeOperation = Math.random() < 0.33 ? "lighter" : "source-over";
+
+    container.addChild(heart);
+  }
+
+  currentHearts += count;
+  if (currentHearts < maxHearts) {
+    createHearts(5);
+  }
+}
+
+function tick(event) {
+  var l = container.numChildren;
+
+  for (var i = 0; i < l; i++) {
+    var heart = container.getChildAt(i);
+
+    if (heart.y < -50) {
+      heart.y = canvas.height + Math.random() * 200;
+      heart._x = Math.random() * canvas.width;
+      heart.velY = Math.random() * 2 + 1;
+      heart.scale = Math.random() * 2 + 1;
+      heart.alpha = Math.random() * 0.75 + 0.05;
+    }
+
+    heart.y -= heart.velY;
+    heart.x = heart._x + Math.cos((heart.y + heart.offX) / heart.perX * Math.PI * 2) * heart.ampX;
+    heart.rotation = heart._rotation + Math.sin((heart.y + heart.offX) / heart.perX * Math.PI * 2) * 30;
+  }
+
+  stage.update(event);
+}
+
+init();
+var canvas = document.getElementById("testCanvas");
+var stage = new createjs.Stage(canvas);
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+var container = new createjs.Container();
+stage.addChild(container);
+
+function createHearts(count) {
+    for (var i = 0; i < count; i++) {
+        var heart = new createjs.Shape();
+        heart.graphics.beginFill("#ff477e");
+        heart.graphics.moveTo(0, -12).curveTo(1, -20, 8, -20).curveTo(16, -20, 16, -10).curveTo(16, 0, 0, 12);
+        heart.graphics.curveTo(-16, 0, -16, -10).curveTo(-16, -20, -8, -20).curveTo(-1, -20, 0, -12);
+        
+        heart.y = Math.random() * canvas.height + canvas.height;
+        heart._x = Math.random() * canvas.width;
+        heart.velY = Math.random() * 2 + 1;
+        heart.ampX = Math.random() * 20;
+        heart.scale = Math.random() * 1.5 + 0.5;
+        heart.alpha = Math.random() * 0.75 + 0.2;
+
+        container.addChild(heart);
+    }
+}
+
+function tick(event) {
+    var l = container.numChildren;
+    for (var i = 0; i < l; i++) {
+        var heart = container.getChildAt(i);
+
+        if (heart.y < -50) {
+            heart.y = canvas.height + Math.random() * 200;
+            heart._x = Math.random() * canvas.width;
+        }
+
+        heart.y -= heart.velY;
+        heart.x = heart._x + Math.sin(heart.y / 50) * heart.ampX;
+    }
+    stage.update(event);
+}
+
+createHearts(30);
+createjs.Ticker.framerate = 60;
+createjs.Ticker.addEventListener("tick", tick);
+
+    </script>
+<button onclick="location.href='index.html'" 
+style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+       padding: 10px; background-color: #000; border: none;
+       border-radius: 50%; cursor: pointer; display: flex;
+       align-items: center; justify-content: center; width: 60px; height: 60px;">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 5l-8 7 8 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+
+
+</body>
+</html>

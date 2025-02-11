@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuenta Atrás Especial</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      background-color: #312;
+      height: 100%;
+    }
+
+    canvas {
+      background-color: #312;
+    }
+
+    .counter {
+      position: absolute;
+      top: 10%; /* Mantener el contador en la parte superior */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 30px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      font-family: 'Courier New', Courier, monospace;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+    }
+
+    .counter span {
+      display: inline-block;
+      padding: 10px;
+      margin: 3px;
+      background-color: #3c2a6f;
+      border-radius: 8px;
+      font-size: 18px;
+      color: #000;
+      text-align: center;
+      width: 70px;
+      height: 70px;
+    }
+
+    .counter .time {
+      font-size: 18px;
+      color: #ffbf00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .counter .label {
+      font-size: 14px;
+      color: #fff;
+      margin-top: 10px;
+    }
+
+    .counter .time span:nth-child(odd) {
+      background-color: #f7c6d0;
+    }
+
+    .counter .time span:nth-child(even) {
+      background-color: #f1d3d9;
+    }
+
+    /* Imagen más grande y más cerca del centro */
+    .centered-image {
+      position: absolute;
+      top: 50%;  /* Movemos la imagen más abajo */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px; /* Imagen más grande */
+      height: auto;
+      z-index: 10;
+    }
+
+    @media (max-width: 600px) {
+      .counter {
+        font-size: 18px;
+      }
+
+      .counter span {
+        font-size: 14px;
+        padding: 8px;
+        width: 50px;
+        height: 50px;
+      }
+
+      .counter .time {
+        font-size: 16px;
+      }
+
+      .centered-image {
+        width: 350px; /* Ajuste para pantallas más pequeñas */
+      }
+    }
+  </style>
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+</head>
+<body>
+  <div class="counter" id="counter">
+    <div class="time" id="counterTime"></div>
+    <div class="label">
+      Tiempo que soy tuyo 🌻❤️
+    </div>
+  </div>
+
+  <!-- Imagen centrada un poco más abajo -->
+  <img class="centered-image" src="https://i.pinimg.com/originals/3b/f2/60/3bf260dda65cdfcddd825a3c59ef7b31.gif" alt="Corazón Girasol">
+
+  <canvas id="testCanvas"></canvas>
+
+  <script>
+    var canvas;
+    var stage;
+    var container;
+    var captureContainers;
+    var captureIndex;
+    var maxHearts = 100;
+    var currentHearts = 0;
+    var startTime = new Date("2024-01-01");
+
+    function init() {
+      canvas = document.getElementById("testCanvas");
+      stage = new createjs.Stage(canvas);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      var w = canvas.width;
+      var h = canvas.height;
+
+      container = new createjs.Container();
+      stage.addChild(container);
+
+      captureContainers = [];
+      captureIndex = 0;
+
+      createHearts(10);
+
+      var text = new createjs.Text("Cada Día Me Enamoro Más De Ti Hari❤️", "bold 24px Arial", "#312");
+      text.textAlign = "center";
+      text.x = w / 2;
+      text.y = h / 2 - text.getMeasuredLineHeight();
+      stage.addChild(text);
+
+      for (var i = 0; i < 100; i++) {
+        var captureContainer = new createjs.Container();
+        captureContainer.cache(0, 0, w, h);
+        captureContainers.push(captureContainer);
+      }
+
+      createjs.Ticker.timingMode = createjs.Ticker.RAF;
+      createjs.Ticker.on("tick", tick);
+
+      setInterval(updateCounter, 1000);
+    }
+
+    function createHearts(count) {
+      var w = canvas.width;
+      var h = canvas.height;
+
+      for (var i = 0; i < count; i++) {
+        var heart = new createjs.Shape();
+        heart.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 30 - 45, 100, 50 + Math.random() * 30));
+        heart.graphics.moveTo(0, -12).curveTo(1, -20, 8, -20).curveTo(16, -20, 16, -10).curveTo(16, 0, 0, 12);
+        heart.graphics.curveTo(-16, 0, -16, -10).curveTo(-16, -20, -8, -20).curveTo(-1, -20, 0, -12);
+
+        heart.y = Math.random() * canvas.height + canvas.height;
+        heart._x = Math.random() * canvas.width;
+        heart.velY = Math.random() * 2 + 1;
+        heart.perX = (1 + Math.random() * 2) * canvas.height;
+        heart.offX = Math.random() * canvas.height;
+        heart.ampX = heart.perX * 0.1 * (0.15 + Math.random());
+        heart.scale = Math.random() * 2 + 1;
+        heart._rotation = Math.random() * 40 - 20;
+        heart.alpha = Math.random() * 0.75 + 0.05;
+        heart.compositeOperation = Math.random() < 0.33 ? "lighter" : "source-over";
+
+        container.addChild(heart);
+      }
+
+      currentHearts += count;
+
+      if (currentHearts < maxHearts) {
+        createHearts(5);
+      }
+    }
+
+    function tick(event) {
+      var w = canvas.width;
+      var h = canvas.height;
+      var l = container.numChildren;
+
+      captureIndex = (captureIndex + 1) % captureContainers.length;
+      stage.removeChildAt(0);
+      var captureContainer = captureContainers[captureIndex];
+      stage.addChildAt(captureContainer, 0);
+      captureContainer.addChild(container);
+
+      for (var i = 0; i < l; i++) {
+        var heart = container.getChildAt(i);
+
+        if (heart.y < -50) {
+          heart.y = h + Math.random() * 200;
+          heart._x = Math.random() * w;
+          heart.velY = Math.random() * 2 + 1;
+          heart.scale = Math.random() * 2 + 1;
+          heart.alpha = Math.random() * 0.75 + 0.05;
+        }
+
+        heart.y -= heart.velY;
+        heart.x = heart._x + Math.cos((heart.y + heart.offX) / heart.perX * Math.PI * 2) * heart.ampX;
+        heart.rotation = heart._rotation + Math.sin((heart.y + heart.offX) / heart.perX * Math.PI * 2) * 30;
+      }
+
+      captureContainer.updateCache("source-over");
+      stage.update(event);
+    }
+
+    function updateCounter() {
+      var currentTime = new Date();
+      var elapsedTime = currentTime - startTime;
+      var seconds = Math.floor(elapsedTime / 1000);
+      var minutes = Math.floor(seconds / 60);
+      var hours = Math.floor(minutes / 60);
+      var days = Math.floor(hours / 24);
+      var months = Math.floor(days / 30);
+      var years = Math.floor(months / 12);
+
+      var yearsLeft = years % 100;
+      var monthsLeft = months % 12;
+      var daysLeft = days < 1 ? 0 : days;
+      var hoursLeft = hours % 24;
+      var minutesLeft = minutes % 60;
+      var secondsLeft = seconds % 60;
+
+      var counterText = ` 
+        <span>${yearsLeft} año${yearsLeft != 1 ? 's' : ''}</span>
+        <span>${monthsLeft} mes${monthsLeft != 1 ? 'es' : ''}</span>
+        <span>${daysLeft} día${daysLeft != 1 ? 's' : ''}</span>
+        <span>${hoursLeft} hora${hoursLeft != 1 ? 's' : ''}</span>
+        <span>${minutesLeft} minuto${minutesLeft != 1 ? 's' : ''}</span>
+        <span>${secondsLeft} seg${secondsLeft != 1 ? 's' : ''}</span>
+      `;
+      document.getElementById("counterTime").innerHTML = counterText;
+    }
+    init();
+    
+  </script>
+<button onclick="location.href='home.html'" 
+style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+       padding: 10px; background-color: #000; border: none;
+       border-radius: 50%; cursor: pointer; display: flex;
+       align-items: center; justify-content: center; width: 60px; height: 60px;">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 5l8 7-8 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+
+
+</body>
+</html>
